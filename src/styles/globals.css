@@ -1,4 +1,34 @@
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/PlusJakartaSans-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/PlusJakartaSans-500.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/PlusJakartaSans-600.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/PlusJakartaSans-700.woff2") format("woff2");
+}
 
 @tailwind base;
 @tailwind components;
@@ -14,6 +44,9 @@
   --color-glass: rgba(255, 255, 255, 0.62);
   --color-glass-strong: rgba(255, 255, 255, 0.75);
   --color-line: rgba(148, 163, 184, 0.35);
+  --color-hero: rgba(148, 163, 184, 0.7);
+  --color-hero-ink: #f8fafc;
+  --color-hero-muted: rgba(248, 250, 252, 0.85);
   --shadow-glass: 0 30px 70px rgba(15, 23, 42, 0.18);
   --shadow-clay: 0 14px 30px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.7);
   --radius-lg: 28px;
@@ -37,6 +70,9 @@
   --color-glass: rgba(15, 23, 42, 0.7);
   --color-glass-strong: rgba(30, 41, 59, 0.85);
   --color-line: rgba(148, 163, 184, 0.3);
+  --color-hero: rgba(30, 41, 59, 0.85);
+  --color-hero-ink: #e2e8f0;
+  --color-hero-muted: rgba(226, 232, 240, 0.85);
   --shadow-glass: 0 30px 70px rgba(2, 6, 23, 0.5);
   --shadow-clay: 0 14px 30px rgba(2, 6, 23, 0.5), inset 0 1px 0 rgba(148, 163, 184, 0.25);
 }
@@ -110,6 +146,15 @@ body {
   margin: 8px 0 0 0;
   color: var(--color-muted);
   font-size: 0.9rem;
+}
+
+.editor-alert {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  background: rgba(251, 191, 36, 0.15);
+  color: #92400e;
+  font-size: 0.85rem;
 }
 
 .editor-sections {
@@ -202,6 +247,9 @@ body {
 
 .field-label {
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .field-hint {
@@ -209,8 +257,66 @@ body {
   font-size: 0.75rem;
 }
 
+.field-error {
+  color: #b45309;
+  font-size: 0.75rem;
+}
+
+.field-required {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-soft);
+}
+
+.editor-empty {
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--color-line);
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.photo-upload {
+  display: grid;
+  gap: 10px;
+}
+
+.photo-upload__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.photo-upload__status {
+  font-size: 0.75rem;
+  color: var(--color-soft);
+}
+
+.photo-upload__error {
+  color: #b91c1c;
+}
+
+.photo-upload__preview {
+  width: 96px;
+  height: 96px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: var(--shadow-clay);
+}
+
+.photo-upload__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .input-field,
-.textarea-field {
+.textarea-field,
+.select-field {
   width: 100%;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-line);
@@ -227,9 +333,17 @@ body {
 }
 
 .input-field:focus,
-.textarea-field:focus {
+.textarea-field:focus,
+.select-field:focus {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.input-field:required:invalid,
+.textarea-field:required:invalid,
+.select-field:required:invalid {
+  border-color: rgba(245, 158, 11, 0.9);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12);
 }
 
 .btn {
@@ -295,6 +409,11 @@ body {
   backdrop-filter: blur(20px);
 }
 
+.preview-controls__stack {
+  display: grid;
+  gap: 8px;
+}
+
 .preview-controls__group {
   display: flex;
   align-items: center;
@@ -346,9 +465,13 @@ body {
   border-radius: var(--radius-lg);
   position: relative;
   overflow: hidden;
+}
+
+.cv-layout {
+  height: 100%;
   display: grid;
-  grid-template-rows: auto 1fr;
-  gap: 18px;
+  grid-template-columns: minmax(0, 0.38fr) minmax(0, 1fr);
+  gap: 26px;
 }
 
 .glass-surface {
@@ -368,45 +491,34 @@ body {
   pointer-events: none;
 }
 
-.cv-header {
+.cv-sidebar {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 20px;
-  align-items: center;
+  grid-template-rows: auto 1fr;
+  gap: 24px;
+  padding-right: 20px;
+  border-right: 1px solid var(--color-line);
 }
 
-.cv-identity {
+.cv-sidebar__photo {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 16px;
-  align-items: center;
+  justify-items: center;
 }
 
-.cv-name {
-  margin: 0;
-  font-size: 2rem;
-  letter-spacing: -0.02em;
-}
-
-.cv-role {
-  margin: 6px 0 0 0;
-  color: var(--color-muted);
-  font-weight: 600;
-}
-
-.cv-subtitle {
-  margin: 4px 0 0 0;
-  color: var(--color-soft);
-  font-size: 0.85rem;
+.cv-sidebar__sections {
+  display: grid;
+  gap: 18px;
 }
 
 .cv-photo {
-  width: 72px;
-  height: 72px;
-  border-radius: 22px;
+  width: 120px;
+  height: 120px;
+  border-radius: 999px;
   overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  border: 3px solid rgba(255, 255, 255, 0.7);
   box-shadow: var(--shadow-clay);
+  background: rgba(255, 255, 255, 0.75);
+  display: grid;
+  place-items: center;
 }
 
 .cv-photo img {
@@ -415,29 +527,67 @@ body {
   object-fit: cover;
 }
 
-.cv-contact {
-  display: grid;
-  gap: 6px;
-  justify-items: end;
-  text-align: right;
-  color: var(--color-muted);
-  font-size: 0.85rem;
+.cv-photo__initials {
+  font-weight: 600;
+  color: var(--color-soft);
+  letter-spacing: 0.1em;
+  font-size: 1rem;
 }
 
-.cv-body {
+.cv-main {
   display: grid;
-  grid-template-columns: 0.7fr 1fr;
+  grid-template-rows: auto min-content;
   gap: 22px;
+  align-content: start;
 }
 
-.cv-column {
+.cv-hero {
+  padding: 24px 26px;
+  border-radius: 24px;
+  background: var(--color-hero);
+  color: var(--color-hero-ink);
+  box-shadow: var(--shadow-clay);
+  display: grid;
+  gap: 8px;
+}
+
+.cv-hero__name {
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+}
+
+.cv-hero__title {
+  margin: 6px 0 0 0;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--color-hero-muted);
+}
+
+.cv-hero__subtitle {
+  margin: 4px 0 0 0;
+  color: var(--color-hero-muted);
+  font-size: 0.9rem;
+}
+
+.cv-hero__summary {
+  margin: 10px 0 0 0;
+  color: var(--color-hero-muted);
+  line-height: 1.5;
+}
+
+.cv-main-body {
   display: grid;
   gap: 18px;
+  align-content: start;
 }
 
 .cv-section {
   display: grid;
   gap: 10px;
+  align-content: start;
 }
 
 .section-title {
@@ -452,6 +602,109 @@ body {
   margin: 0;
   color: var(--color-muted);
   line-height: 1.5;
+}
+
+.cv-contact-list {
+  display: grid;
+  gap: 10px;
+}
+
+.cv-contact-item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.cv-contact-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  border: 1px solid var(--color-line);
+  background: var(--color-glass-strong);
+  display: grid;
+  place-items: center;
+  color: var(--color-soft);
+}
+
+.cv-contact-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.cv-contact-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-soft);
+}
+
+.cv-contact-content {
+  display: grid;
+  gap: 2px;
+}
+
+.cv-contact-value {
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  word-break: break-word;
+}
+
+.cv-education-list {
+  display: grid;
+  gap: 14px;
+}
+
+.cv-education {
+  display: grid;
+  gap: 4px;
+}
+
+.cv-education__institution {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.cv-education__degree {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.cv-education__meta {
+  margin: 0;
+  color: var(--color-soft);
+  font-size: 0.75rem;
+}
+
+.cv-certificate-list {
+  display: grid;
+  gap: 12px;
+}
+
+.cv-certificate {
+  display: grid;
+  gap: 3px;
+}
+
+.cv-certificate__name {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.cv-certificate__meta {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+.cv-certificate__link {
+  margin: 0;
+  color: var(--color-soft);
+  font-size: 0.75rem;
+  word-break: break-word;
 }
 
 .cv-skill-groups {
@@ -482,6 +735,7 @@ body {
 .cv-experience-list {
   display: grid;
   gap: 16px;
+  align-content: start;
 }
 
 .cv-experience {

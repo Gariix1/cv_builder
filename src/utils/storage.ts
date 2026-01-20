@@ -1,5 +1,6 @@
 import type { CV } from "../models/cv.schema";
 import { DEBOUNCE_MS, STORAGE_KEY } from "./constants";
+import { normalizeCV } from "./normalizeCv";
 
 export const loadCV = (fallback: CV): CV => {
   if (typeof window === "undefined") {
@@ -12,26 +13,33 @@ export const loadCV = (fallback: CV): CV => {
       return fallback;
     }
 
-    const parsed = JSON.parse(raw) as CV;
-    return parsed ?? fallback;
+    const parsed = JSON.parse(raw) as unknown;
+    return normalizeCV(parsed, fallback);
   } catch {
     return fallback;
   }
 };
 
-export const saveCV = (cv: CV): void => {
+export const saveCV = (cv: CV): boolean => {
   if (typeof window === "undefined") {
-    return;
+    return false;
   }
 
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cv));
+    return true;
   } catch {
-    return;
+    return false;
   }
 };
 
-export const createDebouncedSaver = (delayMs: number = DEBOUNCE_MS) => {
+interface DebouncedSaverOptions {
+  delayMs?: number;
+  onError?: (error: Error) => void;
+}
+
+export const createDebouncedSaver = (options: DebouncedSaverOptions = {}) => {
+  const { delayMs = DEBOUNCE_MS, onError } = options;
   let timer: ReturnType<typeof setTimeout> | undefined;
 
   return (cv: CV) => {
@@ -39,6 +47,11 @@ export const createDebouncedSaver = (delayMs: number = DEBOUNCE_MS) => {
       window.clearTimeout(timer);
     }
 
-    timer = window.setTimeout(() => saveCV(cv), delayMs);
+    timer = window.setTimeout(() => {
+      const success = saveCV(cv);
+      if (!success && onError) {
+        onError(new Error("Failed to save to local storage."));
+      }
+    }, delayMs);
   };
 };

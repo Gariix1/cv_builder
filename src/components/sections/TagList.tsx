@@ -9,8 +9,8 @@ export const TagList = ({ items }: TagListProps) => {
 
   return (
     <div className="tag-list">
-      {items.map((item) => (
-        <span key={item} className="tag">
+      {items.map((item, index) => (
+        <span key={`${item}-${index}`} className="tag">
           {item}
         </span>
       ))}

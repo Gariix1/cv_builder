@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { EditorPanel } from "./components/editor/EditorPanel";
-import { AppShell } from "./components/layout/AppShell";
-import { PreviewControls } from "./components/preview/PreviewControls";
-import { PreviewPane } from "./components/preview/PreviewPane";
+import { EditorPanel } from "./components/editor";
+import { AppShell } from "./components/layout";
+import { PreviewControls, PreviewPane } from "./components/preview";
+import type { TranslationKey } from "./i18n";
 import type { CV } from "./models/cv.schema";
 import { useCVStore } from "./store/cvStore";
-import { exportPdf } from "./utils/exportPdf";
 import { createDebouncedSaver } from "./utils/storage";
 import { DEFAULT_ZOOM, type ZoomLevel } from "./utils/constants";
 
@@ -16,8 +15,16 @@ const App = () => {
   const [zoom, setZoom] = useState<ZoomLevel>(DEFAULT_ZOOM);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isExporting, setIsExporting] = useState(false);
+  const [storageWarningKey, setStorageWarningKey] =
+    useState<TranslationKey | null>(null);
 
-  const persist = useMemo(() => createDebouncedSaver(), []);
+  const persist = useMemo(
+    () =>
+      createDebouncedSaver({
+        onError: () => setStorageWarningKey("storageWarning"),
+      }),
+    [],
+  );
 
   useEffect(() => {
     const unsubscribe = useCVStore.subscribe(
@@ -36,6 +43,7 @@ const App = () => {
     setIsExporting(true);
 
     try {
+      const { exportPdf } = await import("./utils/exportPdf");
       await exportPdf(templateRef.current, cv.profile.fullName);
     } finally {
       setIsExporting(false);
@@ -45,7 +53,7 @@ const App = () => {
   return (
     <div className={`app-root theme-${theme}`}>
       <AppShell
-        editor={<EditorPanel />}
+        editor={<EditorPanel storageWarningKey={storageWarningKey} />}
         previewControls={
           <PreviewControls
             zoom={zoom}
