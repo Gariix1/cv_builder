@@ -7,7 +7,7 @@ interface ExperienceSectionProps {
   experience: Experience[];
 }
 
-const hasExperienceContent = (item: Experience) =>
+export const hasExperienceContent = (item: Experience) =>
   hasText(item.role) ||
   hasText(item.company) ||
   hasText(item.startDate) ||
@@ -57,9 +57,12 @@ const ExperienceItem = ({ item }: { item: Experience }) => {
   );
 };
 
+export const getVisibleExperience = (experience: Experience[]) =>
+  experience.filter(hasExperienceContent);
+
 export const ExperienceSection = ({ experience }: ExperienceSectionProps) => {
   const { t } = useI18n();
-  const visibleItems = experience.filter(hasExperienceContent);
+  const visibleItems = getVisibleExperience(experience);
 
   if (visibleItems.length === 0) {
     return null;

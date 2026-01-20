@@ -7,6 +7,15 @@ interface CertificatesSectionProps {
   certificates: Certificate[];
 }
 
+export const hasCertificateContent = (item: Certificate) =>
+  hasText(item.name) ||
+  hasText(item.issuer) ||
+  hasText(item.year) ||
+  hasText(item.link);
+
+export const getVisibleCertificates = (certificates: Certificate[]) =>
+  certificates.filter(hasCertificateContent);
+
 const CertificateItem = ({ item }: { item: Certificate }) => (
   <div className="cv-certificate">
     <p className="cv-certificate__name">{item.name}</p>
@@ -21,13 +30,7 @@ export const CertificatesSection = ({
   certificates,
 }: CertificatesSectionProps) => {
   const { t } = useI18n();
-  const visibleItems = certificates.filter(
-    (item) =>
-      hasText(item.name) ||
-      hasText(item.issuer) ||
-      hasText(item.year) ||
-      hasText(item.link),
-  );
+  const visibleItems = getVisibleCertificates(certificates);
 
   return (
     <CVSectionList

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { useI18n } from "../../../i18n";
+import { useI18n, type TranslationKey } from "../../../i18n";
 import type { PersonalInfo } from "../../../models/cv.schema";
 import { CVSectionList } from "../../../components/sections";
 
@@ -120,10 +120,12 @@ const ContactItem = ({ item }: { item: ContactItem }) => (
   </div>
 );
 
-export const ContactSection = ({ personal }: ContactSectionProps) => {
-  const { t } = useI18n();
+export const buildContactItems = (
+  personal: PersonalInfo,
+  t: (key: TranslationKey) => string,
+): ContactItem[] => {
   const location = [personal.city, personal.country].filter(Boolean).join(", ");
-  const items = [
+  return [
     { label: t("contactLocationLabel"), value: location, type: "location" },
     { label: t("contactPhoneLabel"), value: personal.phone, type: "phone" },
     { label: t("contactEmailLabel"), value: personal.email, type: "email" },
@@ -131,13 +133,30 @@ export const ContactSection = ({ personal }: ContactSectionProps) => {
     { label: t("contactGithubLabel"), value: personal.github, type: "github" },
     { label: t("contactWebsiteLabel"), value: personal.website, type: "website" },
   ].filter((item) => item.value) as ContactItem[];
+};
 
+export const ContactSectionList = ({
+  title,
+  items,
+}: {
+  title: string;
+  items: ContactItem[];
+}) => {
   return (
     <CVSectionList
-      title={t("sectionContact")}
+      title={title}
       items={items}
       className="cv-contact-list"
       renderItem={(item) => <ContactItem key={item.label} item={item} />}
     />
   );
 };
+
+export const ContactSection = ({ personal }: ContactSectionProps) => {
+  const { t } = useI18n();
+  const items = buildContactItems(personal, t);
+
+  return <ContactSectionList title={t("sectionContact")} items={items} />;
+};
+
+export type { ContactItem };

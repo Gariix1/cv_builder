@@ -12,11 +12,14 @@ const getStatusLabel = (
   t: (key: "fieldStatusCompleted" | "fieldStatusInProgress") => string,
 ) => (status === "completed" ? t("fieldStatusCompleted") : t("fieldStatusInProgress"));
 
-const hasEducationContent = (item: Education) =>
+export const hasEducationContent = (item: Education) =>
   hasText(item.institution) ||
   hasText(item.degree) ||
   hasText(item.startDate) ||
   hasText(item.endDate);
+
+export const getVisibleEducation = (education: Education[]) =>
+  education.filter(hasEducationContent);
 
 const EducationItem = ({
   item,
@@ -37,7 +40,7 @@ const EducationItem = ({
 
 export const EducationSection = ({ education }: EducationSectionProps) => {
   const { t } = useI18n();
-  const visibleItems = education.filter(hasEducationContent);
+  const visibleItems = getVisibleEducation(education);
 
   return (
     <CVSectionList

@@ -1,4 +1,5 @@
 export * from "./CertificatesSection";
+export * from "./CompactHeader";
 export * from "./ContactSection";
 export * from "./EducationSection";
 export * from "./ExperienceSection";

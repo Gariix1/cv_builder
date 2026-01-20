@@ -1,8 +1,3 @@
-import { toPng } from "html-to-image";
-import jsPDF from "jspdf";
-
-import { A4_HEIGHT_MM, A4_WIDTH_MM, EXPORT_PIXEL_RATIO } from "./constants";
-
 const sanitizeFileName = (value: string) => {
   const sanitized = value
     .trim()
@@ -21,36 +16,16 @@ export const exportPdf = async (
   }
 
   document.documentElement.classList.add("exporting");
+  const previousTitle = document.title;
 
   try {
     if (document.fonts && "ready" in document.fonts) {
       await document.fonts.ready;
     }
-
-    const dataUrl = await toPng(element, {
-      pixelRatio: EXPORT_PIXEL_RATIO,
-      cacheBust: true,
-    });
-
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: [A4_WIDTH_MM, A4_HEIGHT_MM],
-    });
-
-    pdf.addImage(
-      dataUrl,
-      "PNG",
-      0,
-      0,
-      A4_WIDTH_MM,
-      A4_HEIGHT_MM,
-      undefined,
-      "FAST",
-    );
-
-    pdf.save(`${sanitizeFileName(fullName)}_CV.pdf`);
+    document.title = `${sanitizeFileName(fullName)}_CV`;
+    window.print();
   } finally {
+    document.title = previousTitle;
     document.documentElement.classList.remove("exporting");
   }
 };
