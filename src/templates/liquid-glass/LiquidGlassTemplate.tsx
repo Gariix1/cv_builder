@@ -245,7 +245,6 @@ const LiquidGlassTemplateBase = (
     const mainFirst = mainFirstRef.current;
 
     if (!measureRoot || !sidebarFirst || !mainFirst) {
-      setPages([]);
       return;
     }
 
@@ -257,7 +256,6 @@ const LiquidGlassTemplateBase = (
       mainRestRef.current?.offsetHeight ?? mainFirstHeight;
 
     if (!sidebarFirstHeight || !mainFirstHeight) {
-      setPages([]);
       return;
     }
 
@@ -355,6 +353,7 @@ const LiquidGlassTemplateBase = (
     setPages(nextPages);
   }, [
     contactItems,
+    profile,
     visibleEducation,
     visibleSkills,
     visibleCertificates,
@@ -384,6 +383,36 @@ const LiquidGlassTemplateBase = (
     const handleResize = () => computePages();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, [computePages]);
+
+  useLayoutEffect(() => {
+    if (typeof ResizeObserver === "undefined") {
+      return;
+    }
+
+    let frame = 0;
+    const observer = new ResizeObserver(() => {
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+      }
+      frame = window.requestAnimationFrame(() => computePages());
+    });
+
+    const elements = [
+      sidebarFirstRef.current,
+      sidebarRestRef.current,
+      mainFirstRef.current,
+      mainRestRef.current,
+    ].filter(Boolean) as Element[];
+
+    elements.forEach((element) => observer.observe(element));
+
+    return () => {
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+      }
+      observer.disconnect();
+    };
   }, [computePages]);
 
   const pagesToRender = pages.length > 0 ? pages : fallbackPages;

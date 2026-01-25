@@ -8,7 +8,7 @@ interface SkillsSectionProps {
 }
 
 export const hasSkillGroupContent = (group: SkillGroup) =>
-  hasText(group.category) || group.skills.length > 0;
+  hasText(group.category) || group.skills.some(hasText);
 
 export const getVisibleSkills = (skills: SkillGroup[]) =>
   skills.filter(hasSkillGroupContent);
@@ -30,7 +30,7 @@ export const SkillsSection = ({ skills }: SkillsSectionProps) => {
       items={visibleGroups}
       className="cv-skill-groups"
       renderItem={(group, index) => (
-        <SkillGroupItem key={`${group.category}-${index}`} group={group} />
+        <SkillGroupItem key={group.id} group={group} />
       )}
     />
   );

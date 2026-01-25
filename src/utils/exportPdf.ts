@@ -7,6 +7,56 @@ const sanitizeFileName = (value: string) => {
   return sanitized.length > 0 ? sanitized : "CV";
 };
 
+const waitForPrintToFinish = () =>
+  new Promise<void>((resolve) => {
+    if (typeof window === "undefined") {
+      resolve();
+      return;
+    }
+
+    let resolved = false;
+    let timeoutId: number | undefined;
+    const mediaQuery = window.matchMedia?.("print");
+    let handleChange: ((event: MediaQueryListEvent) => void) | null = null;
+
+    const finish = () => {
+      if (resolved) {
+        return;
+      }
+      resolved = true;
+      window.removeEventListener("afterprint", finish);
+      window.removeEventListener("focus", finish);
+      if (mediaQuery && handleChange) {
+        if ("removeEventListener" in mediaQuery) {
+          mediaQuery.removeEventListener("change", handleChange);
+        } else if ("removeListener" in mediaQuery) {
+          mediaQuery.removeListener(handleChange);
+        }
+      }
+      if (timeoutId !== undefined) {
+        window.clearTimeout(timeoutId);
+      }
+      resolve();
+    };
+
+    if (mediaQuery) {
+      handleChange = (event) => {
+        if (!event.matches) {
+          finish();
+        }
+      };
+      if ("addEventListener" in mediaQuery) {
+        mediaQuery.addEventListener("change", handleChange);
+      } else if ("addListener" in mediaQuery) {
+        mediaQuery.addListener(handleChange);
+      }
+    }
+
+    window.addEventListener("afterprint", finish, { once: true });
+    window.addEventListener("focus", finish, { once: true });
+    timeoutId = window.setTimeout(finish, 120000);
+  });
+
 export const exportPdf = async (
   element: HTMLElement,
   fullName: string,
@@ -23,7 +73,9 @@ export const exportPdf = async (
       await document.fonts.ready;
     }
     document.title = `${sanitizeFileName(fullName)}_CV`;
+    const printDone = waitForPrintToFinish();
     window.print();
+    await printDone;
   } finally {
     document.title = previousTitle;
     document.documentElement.classList.remove("exporting");

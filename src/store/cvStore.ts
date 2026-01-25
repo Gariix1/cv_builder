@@ -44,9 +44,9 @@ interface CVState {
     };
     skills: {
       add: () => void;
-      update: (index: number, patch: Partial<SkillGroup>) => void;
-      remove: (index: number) => void;
-      move: (index: number, direction: "up" | "down") => void;
+      update: (id: string, patch: Partial<SkillGroup>) => void;
+      remove: (id: string) => void;
+      move: (id: string, direction: "up" | "down") => void;
     };
   };
 }
@@ -80,6 +80,7 @@ const createCertificate = (): Certificate => ({
 });
 
 const createSkillGroup = (): SkillGroup => ({
+  id: createId(),
   category: "",
   skills: [],
 });
@@ -247,34 +248,25 @@ export const useCVStore = create<CVState>()(
               skills: [...state.cv.skills, createSkillGroup()],
             },
           })),
-        update: (index, patch) =>
-          set((state) => {
-            if (!state.cv.skills[index]) {
-              return state;
-            }
-
-            return {
-              cv: {
-                ...state.cv,
-                skills: state.cv.skills.map((item, currentIndex) =>
-                  currentIndex === index ? { ...item, ...patch } : item,
-                ),
-              },
-            };
-          }),
-        remove: (index) =>
+        update: (id, patch) =>
           set((state) => ({
             cv: {
               ...state.cv,
-              skills: state.cv.skills.filter(
-                (_item, currentIndex) => currentIndex !== index,
+              skills: state.cv.skills.map((item) =>
+                item.id === id ? { ...item, ...patch } : item,
               ),
             },
           })),
-        move: (index, direction) =>
+        remove: (id) =>
+          set((state) => ({
+            cv: {
+              ...state.cv,
+              skills: state.cv.skills.filter((item) => item.id !== id),
+            },
+          })),
+        move: (id, direction) =>
           set((state) => {
-            const nextIndex = direction === "up" ? index - 1 : index + 1;
-            const next = moveItem(state.cv.skills, index, nextIndex);
+            const next = moveById(state.cv.skills, id, direction);
             if (next === state.cv.skills) {
               return state;
             }

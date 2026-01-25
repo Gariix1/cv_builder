@@ -13,8 +13,8 @@ export const hasExperienceContent = (item: Experience) =>
   hasText(item.startDate) ||
   hasText(item.endDate) ||
   hasText(item.description) ||
-  item.bullets.length > 0 ||
-  item.techStack.length > 0;
+  item.bullets.some(hasText) ||
+  item.techStack.some(hasText);
 
 const ExperienceItem = ({ item }: { item: Experience }) => {
   const showHeader =
@@ -22,6 +22,7 @@ const ExperienceItem = ({ item }: { item: Experience }) => {
     hasText(item.company) ||
     hasText(item.startDate) ||
     hasText(item.endDate);
+  const visibleBullets = item.bullets.filter(hasText);
   return (
     <article className="cv-experience">
       {showHeader ? (
@@ -45,9 +46,9 @@ const ExperienceItem = ({ item }: { item: Experience }) => {
       {item.description ? (
         <p className="cv-experience__description">{item.description}</p>
       ) : null}
-      {item.bullets.length > 0 ? (
+      {visibleBullets.length > 0 ? (
         <ul className="cv-experience__bullets">
-          {item.bullets.map((bullet, index) => (
+          {visibleBullets.map((bullet, index) => (
             <li key={`${item.id}-bullet-${index}`}>{bullet}</li>
           ))}
         </ul>

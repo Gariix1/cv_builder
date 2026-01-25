@@ -33,11 +33,11 @@ export const SkillGroupCard = ({
     field: keyof SkillGroupFieldValues,
     value: string,
   ) => {
-    updateSkillGroup(index, { [field]: value } as Partial<SkillGroup>);
+    updateSkillGroup(item.id, { [field]: value } as Partial<SkillGroup>);
   };
 
   const onSkillsChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    updateSkillGroup(index, { skills: splitLines(event.target.value) });
+    updateSkillGroup(item.id, { skills: splitLines(event.target.value) });
   };
 
   const fieldValues: SkillGroupFieldValues = {
@@ -50,9 +50,9 @@ export const SkillGroupCard = ({
       meta={item.category || t("editorMetaNewGroup")}
       actions={
         <EditorItemActions
-          onMoveUp={() => moveSkillGroup(index, "up")}
-          onMoveDown={() => moveSkillGroup(index, "down")}
-          onRemove={() => removeSkillGroup(index)}
+          onMoveUp={() => moveSkillGroup(item.id, "up")}
+          onMoveDown={() => moveSkillGroup(item.id, "down")}
+          onRemove={() => removeSkillGroup(item.id)}
           disableUp={index === 0}
           disableDown={index === total - 1}
         />
@@ -62,7 +62,7 @@ export const SkillGroupCard = ({
         fields={SKILL_GROUP_FIELDS}
         values={fieldValues}
         onChange={onFieldChange}
-        keyPrefix={`skills-${index}`}
+        keyPrefix={`skills-${item.id}`}
       />
       <Textarea
         label={t("fieldSkillsLabel")}

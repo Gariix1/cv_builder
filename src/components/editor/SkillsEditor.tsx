@@ -18,7 +18,7 @@ export const SkillsEditor = () => {
       emptyState={t("editorEmptySkills")}
       renderItem={(item, index, total) => (
         <SkillGroupCard
-          key={`${item.category}-${index}`}
+          key={item.id}
           item={item}
           index={index}
           total={total}

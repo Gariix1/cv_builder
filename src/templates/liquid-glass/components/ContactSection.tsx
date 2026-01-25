@@ -105,7 +105,7 @@ const icons: Record<ContactType, ReactNode> = {
 };
 
 const ContactIcon = ({ type }: { type: ContactType }) => (
-  <span className="cv-contact-icon" aria-hidden="true">
+  <span className={`cv-contact-icon cv-contact-icon--${type}`} aria-hidden="true">
     {icons[type]}
   </span>
 );

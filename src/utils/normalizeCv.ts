@@ -124,6 +124,7 @@ const normalizeSkillGroup = (value: unknown): SkillGroup => {
   const data = isRecord(value) ? value : {};
 
   return {
+    id: normalizeOptionalString(data.id) ?? createId(),
     category: normalizeString(data.category, ""),
     skills: normalizeStringArray(data.skills),
   };
